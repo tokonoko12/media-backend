@@ -38,7 +38,7 @@ def get_movie_streams(imdbid):
 def get_series_strems(imdbid, season, episode):
     streams = torrentio_source.getStreams(
         f"{imdbid}:{1 if season is None else season}:{1 if episode is None else episode}",
-        "movies",
+        "series",
         f"{BASE_URL}/stream",
         torbox_downloader,
     )
