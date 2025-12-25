@@ -75,8 +75,8 @@ class TorrentioSource(Source):
         metadata = stream["behaviorHints"]
         magnet_hash = stream["url"].split("/")[6]
         hash = {
-            "filename": metadata["filename"],
-            "filehash": metadata["videoHash"],
+            "filename": metadata.get("filename"),
+            "filehash": metadata.get("videoHash"),
             "url": stream["url"],
         }
         base64_encoded = base64.b64encode(json.dumps(hash).encode("utf-8")).decode(

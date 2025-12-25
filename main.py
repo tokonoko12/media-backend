@@ -1,10 +1,13 @@
 import os
 
+from dotenv import load_dotenv
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 
 import lib.downloader as downloader
 import lib.source as source
+
+load_dotenv()
 
 BASE_URL = os.environ.get("BASE_URL", "http://localhost:8090")
 torrentio_base_url = os.environ.get("TORRENTIO_BASE_URL", "https://torrentio.strem.fun")
