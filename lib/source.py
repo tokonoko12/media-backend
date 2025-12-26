@@ -40,7 +40,6 @@ class TorrentioSource(Source):
         request_link = self.__getLink__(media_id, category, downloader)
         req = requests.get(request_link, headers=HEADERS)
         response = json.loads(req.text)
-
         for stream in response["streams"]:
             if QUALITY_4K in stream["name"]:
                 response_structure["streams"][QUALITY_4K].append(
@@ -66,8 +65,10 @@ class TorrentioSource(Source):
         metadata = json.loads(base64.b64decode(encoded_hash).decode("utf-8"))
 
         response = requests.get(metadata["url"], headers=HEADERS, allow_redirects=False)
-        media_id = response.headers["location"].split("?")[0].split("dld/")[1]
-        media_streams = downloader.getTransCodeStreams("torrent", media_id)
+        media_id = downloader.getMediaId(response.headers["location"])
+        media_streams = downloader.getTransCodeStreams(
+            "torrent", media_id, options.get("serverurl")
+        )
         media_streams["original"] = metadata["url"]
         return media_streams
 
