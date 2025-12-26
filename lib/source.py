@@ -26,7 +26,7 @@ class TorrentioSource(Source):
         self.type = "torrentio"
 
     def __getLink__(self, media_id, category, downloader):
-        return f"{self.baseurl}/debridoptions={self.options}|{downloader.type}={downloader.token}/stream/{category}/{media_id}.json"
+        return f"{self.baseurl}/language=hindi|debridoptions={self.options}|{downloader.type}={downloader.token}/stream/{category}/{media_id}.json"
 
     def getStreams(self, media_id, category, server_url, downloader):
         response_structure = {
