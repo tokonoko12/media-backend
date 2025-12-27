@@ -110,7 +110,7 @@ def get_movie_detail(tmdb_id, server_base_url):
         imdb_id = data.get("external_ids", {}).get("imdb_id")
         unique_id = imdb_id if imdb_id else f"tmdb:{tmdb_id}"
         
-        data["streams_url"] = f"{server_base_url}streams/movies/{unique_id}"
+        data["streams_url"] = f"{server_base_url}/streams/movies/{unique_id}"
         
         # Remove external_ids from the response as per user request
         data.pop("external_ids", None)
@@ -190,7 +190,7 @@ def get_season_details(tmdb_id, season_number, server_base_url):
 
         for episode in data.get("episodes", []):
             ep_num = episode.get("episode_number")
-            episode["streams_url"] = f"{server_base_url}streams/series/{unique_id}/{season_number}/{ep_num}"
+            episode["streams_url"] = f"{server_base_url}/streams/series/{unique_id}/{season_number}/{ep_num}"
             
             # Inject history if exists, else default
             watched_duration = 0
