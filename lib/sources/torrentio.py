@@ -3,32 +3,21 @@ import json
 
 import requests
 
-QUALITY_4K = "4k"
-QUALITY_1080P = "1080p"
-QUALITY_720P = "720p"
-QUALITY_OTHER = "other"
-
-HEADERS = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Safari/537.36"
-}
+import lib.sources.source as source
+from lib.constant import HEADERS, QUALITY_4K, QUALITY_720P, QUALITY_1080P, QUALITY_OTHER
 
 
-class Source:
-    def __init__(self) -> None:
-        pass
-
-
-class TorrentioSource(Source):
-    def __init__(self, baseurl, options) -> None:
+class TorrentioSource(source.Source):
+    def __init__(self, baseurl, downloader) -> None:
         super().__init__()
         self.baseurl = baseurl
-        self.options = options
+        self.downloader = downloader
         self.type = "torrentio"
 
-    def __getLink__(self, media_id, category, downloader):
-        return f"{self.baseurl}/language=hindi|debridoptions={self.options}|{downloader.type}={downloader.token}/stream/{category}/{media_id}.json"
+    def __getStreamsFetchLink__(self, media_id, category):
+        return f"{self.baseurl}/stream/{category}/{media_id}.json"
 
-    def getStreams(self, media_id, category, server_url, downloader):
+    def getStreams(self, media_id, category, server_url):
         response_structure = {
             "streams": {
                 QUALITY_4K: [],
@@ -37,25 +26,29 @@ class TorrentioSource(Source):
                 QUALITY_OTHER: [],
             }
         }
-        request_link = self.__getLink__(media_id, category, downloader)
+        request_link = self.__getStreamsFetchLink__(media_id, category)
         req = requests.get(request_link, headers=HEADERS)
+
+        if not req.status_code == 200:
+            return response_structure
+
         response = json.loads(req.text)
         for stream in response["streams"]:
             if QUALITY_4K in stream["name"]:
                 response_structure["streams"][QUALITY_4K].append(
-                    self.__getStream__(stream, server_url, downloader.type)
+                    self.__getStream__(stream, server_url, self.downloader)
                 )
             elif QUALITY_1080P in stream["name"]:
                 response_structure["streams"][QUALITY_1080P].append(
-                    self.__getStream__(stream, server_url, downloader.type)
+                    self.__getStream__(stream, server_url, self.downloader)
                 )
             elif QUALITY_720P in stream["name"]:
                 response_structure["streams"][QUALITY_720P].append(
-                    self.__getStream__(stream, server_url, downloader.type)
+                    self.__getStream__(stream, server_url, self.downloader)
                 )
             else:
                 response_structure["streams"][QUALITY_OTHER].append(
-                    self.__getStream__(stream, server_url, downloader.type)
+                    self.__getStream__(stream, server_url, self.downloader)
                 )
 
         return response_structure

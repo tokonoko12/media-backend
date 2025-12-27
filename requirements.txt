@@ -2,3 +2,7 @@ flask
 requests
 flask-cors
 python-dotenv
+Flask-SQLAlchemy
+psycopg2-binary
+Flask-JWT-Extended
+Flask-Bcrypt
