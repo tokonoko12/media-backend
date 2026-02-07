@@ -60,7 +60,7 @@ class RealDebridDownloader(Downloader):
         for audio in response["details"]["audio"]:
             value["audios"][audio] = {
                 "language": response["details"]["audio"][audio]["lang"],
-                "url": f"{server_url}?downloader_type={self.type}&url={base64.b64encode(transcode_model_url.replace('{audio}', audio).encode('utf-8')).decode("utf-8)}",
+                "url": f"{server_url}?downloader_type={self.type}&url={base64.b64encode(transcode_model_url.replace('{audio}', audio).encode('utf-8')).decode('utf-8')}",
             }
         value["duration"] = response["duration"]
         return value
