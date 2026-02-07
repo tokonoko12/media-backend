@@ -6,6 +6,7 @@ from flask_jwt_extended import jwt_required
 from lib.sourceaggregator import SourceAggregator
 from flask_jwt_extended import jwt_required
 from lib.tmdb_client import TMDBClient
+import base64
 
 client = TMDBClient()
 def health_check():
@@ -19,7 +20,7 @@ def get_movie_streams(imdbid, base_server_url):
         resolved_id = client.get_external_id(tmdb_id, "movie")
         if resolved_id:
             lookup_id = resolved_id
-    
+
     streams = SourceAggregator.streams(lookup_id, "movies", f"{base_server_url}/streaming")
     return jsonify(streams)
 
@@ -59,5 +60,6 @@ def serve_mpd():
     downloader_type = request.args.get("downloader_type", None)
     downloader_obj = DownloadManager.getDownloader(downloader_type)
 
+    url = base64.b64decode(url).decode('utf-8')
     proxified_manifest = downloader_obj.proxifiedStreamManifest("mpd", f"{url}?t={t}")
     return Response(proxified_manifest, mimetype="application/xml")

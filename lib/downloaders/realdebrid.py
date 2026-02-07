@@ -4,7 +4,7 @@ import requests
 
 from lib.constant import HEADERS
 from lib.downloaders.downloader import Downloader
-
+import base64
 
 class RealDebridDownloader(Downloader):
     def __init__(self, baseurl, token, proxy_url) -> None:
@@ -60,7 +60,7 @@ class RealDebridDownloader(Downloader):
         for audio in response["details"]["audio"]:
             value["audios"][audio] = {
                 "language": response["details"]["audio"][audio]["lang"],
-                "url": f"{server_url}?downloader_type={self.type}&url={transcode_model_url.replace('{audio}', audio)}",
+                "url": f"{server_url}?downloader_type={self.type}&url={base64.b64encode(transcode_model_url.replace('{audio}', audio).encode('utf-8')).decode("utf-8)}",
             }
         value["duration"] = response["duration"]
         return value
