@@ -44,7 +44,7 @@ def test_watchlist():
     print(f"Status: {res.status_code}")
     print(f"Response: {res.text}")
     data = res.json()
-    if any(item['media_id'] == media_id for item in data['watchlist']):
+    if any(item.get('tmdb_id') == media_id for item in data['watchlist']):
         print("PASS: Item found in watchlist.")
     else:
         print("FAIL: Item NOT found in watchlist.")
@@ -59,7 +59,7 @@ def test_watchlist():
     print("\n[TEST] Verify Removal")
     res = requests.get(f"{API_URL}/watchlist", headers=headers)
     data = res.json()
-    if not any(item['media_id'] == media_id for item in data['watchlist']):
+    if not any(item.get('tmdb_id') == media_id for item in data['watchlist']):
         print("PASS: Watchlist does not contain item.")
     else:
         print("FAIL: Item still in watchlist.")

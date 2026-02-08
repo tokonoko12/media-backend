@@ -66,6 +66,14 @@ class TMDBClient:
         return {"cast": cast, "crew": crew}
 
 
+    def _get_trailer(self, videos_data):
+        results = videos_data.get("results", [])
+        for video in results:
+            if video.get("site") == "YouTube" and video.get("type") == "Trailer":
+                return f"https://www.youtube.com/watch?v={video.get('key')}"
+        return None
+
+
 
     def get_trending_home(self):
         # Trending All Day
@@ -152,7 +160,7 @@ class TMDBClient:
 
     def get_movie_details(self, tmdb_id):
         data = self._get(f"/movie/{tmdb_id}", params={
-            "append_to_response": "credits,recommendations,external_ids"
+            "append_to_response": "credits,recommendations,external_ids,videos"
         })
         # Format base info
         formatted = self._format_media(data, "movie")
@@ -163,11 +171,13 @@ class TMDBClient:
         formatted["runtime"] = data.get("runtime")
         # External IDs
         formatted["external_ids"] = data.get("external_ids")
+        # Trailer
+        formatted["trailer_url"] = self._get_trailer(data.get("videos", {}))
         return formatted
 
     def get_series_details(self, tmdb_id):
         data = self._get(f"/tv/{tmdb_id}", params={
-            "append_to_response": "credits,recommendations,season/1,external_ids"
+            "append_to_response": "credits,recommendations,season/1,external_ids,videos"
         })
         formatted = self._format_media(data, "series")
         formatted["credits"] = self._format_credits(data.get("credits"))
@@ -176,6 +186,8 @@ class TMDBClient:
         formatted["number_of_episodes"] = data.get("number_of_episodes")
         formatted["number_of_seasons"] = data.get("number_of_seasons")
         formatted["external_ids"] = data.get("external_ids")
+        # Trailer
+        formatted["trailer_url"] = self._get_trailer(data.get("videos", {}))
         return formatted
 
     def get_season_details(self, tmdb_id, season_number):
